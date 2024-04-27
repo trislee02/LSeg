@@ -350,7 +350,8 @@ for line in lines:
 
 with torch.no_grad():
     outputs = evaluator.parallel_forward(image, labels) #evaluator.forward(image, labels) #parallel_forward
-    print(f"Shape of outputs: {outputs.shape}")
+    for i in range(len(outputs)):
+        print(f"Shape of output {i}: {outputs[i].shape}")
     #outputs = model(image,labels)
     predicts = [
         torch.max(output, 1)[1].cpu().numpy() 
