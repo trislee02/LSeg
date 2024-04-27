@@ -153,7 +153,18 @@ class LSeg(BaseModel):
             self.scratch.head_block = depthwise_block(activation=kwargs["activation"])
             self.block_depth = kwargs['block_depth']
 
-        self.scratch.output_conv = head
+        self.scratch.output_conv_1 = nn.Sequential(
+            Interpolate(scale_factor=2, mode="bilinear", align_corners=True),
+        )
+        self.scratch.output_conv_2 = nn.Sequential(
+            Interpolate(scale_factor=2, mode="bilinear", align_corners=True),
+        )
+        self.scratch.output_conv_3 = nn.Sequential(
+            Interpolate(scale_factor=2, mode="bilinear", align_corners=True),
+        )
+        self.scratch.output_conv_4 = nn.Sequential(
+            Interpolate(scale_factor=2, mode="bilinear", align_corners=True),
+        )
 
         self.text = clip.tokenize(self.labels)    
         
@@ -200,9 +211,12 @@ class LSeg(BaseModel):
                 out = self.scratch.head_block(out)
             out = self.scratch.head_block(out, False)
 
-        out = self.scratch.output_conv(out)
+        out_1 = self.scratch.output_conv_1(out)
+        out_2 = self.scratch.output_conv_2(out)
+        out_3 = self.scratch.output_conv_3(out)
+        out_4 = self.scratch.output_conv_4(out)
             
-        return out
+        return out_1, out_2, out_3, out_4
 
 
 class LSegNet(LSeg):
@@ -216,11 +230,7 @@ class LSegNet(LSeg):
         self.scale_factor = scale_factor
         self.labels = labels
 
-        head = nn.Sequential(
-            Interpolate(scale_factor=2, mode="bilinear", align_corners=True),
-        )
-
-        super().__init__(head, **kwargs)
+        super().__init__(**kwargs)
 
         if path is not None:
             self.load(path)

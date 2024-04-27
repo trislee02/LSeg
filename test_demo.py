@@ -23,6 +23,7 @@ from encoding.datasets import test_batchify_fn
 from encoding.models.sseg import BaseNet
 from additional_utils.models import LSeg_MultiEvalModule
 from modules.lseg_module import LSegModule
+from modules.models.lseg_net import LSegNet
 
 import math
 import types
@@ -266,45 +267,8 @@ args.backbone = 'clip_vitl16_384'
 args.weights = 'checkpoints/demo_e200.ckpt'
 args.ignore_index = 255
 
-module = LSegModule.load_from_checkpoint(
-    checkpoint_path=args.weights,
-    data_path=args.data_path,
-    dataset=args.dataset,
-    backbone=args.backbone,
-    aux=args.aux,
-    num_features=256,
-    aux_weight=0,
-    se_loss=False,
-    se_weight=0,
-    base_lr=0,
-    batch_size=1,
-    max_epochs=0,
-    ignore_index=args.ignore_index,
-    dropout=0.0,
-    scale_inv=args.scale_inv,
-    augment=False,
-    no_batchnorm=False,
-    widehead=args.widehead,
-    widehead_hr=args.widehead_hr,
-    map_locatin="cpu",
-    arch_option=0,
-    block_depth=0,
-    activation='lrelu',
-)
+model = LSegNet('')
 
-input_transform = module.val_transform
-
-# dataloader
-loader_kwargs = (
-    {"num_workers": args.workers, "pin_memory": True} if args.cuda else {}
-)
-
-# model
-if isinstance(module.net, BaseNet):
-    model = module.net
-else:
-    model = module
-    
 model = model.cuda()
 model = model.eval()
 scales = (
@@ -315,12 +279,6 @@ scales = (
 
 model.mean = [0.5, 0.5, 0.5]
 model.std = [0.5, 0.5, 0.5]
-
-evaluator = LSeg_MultiEvalModule(
-    model, scales=scales, flip=True
-).cuda()
-evaluator.eval()
-
 
 img_path = 'inputs/coffee.jpg'
 #img_path = 'inputs/catdog.png'
@@ -350,10 +308,7 @@ for line in lines:
     labels.append(label)
 
 with torch.no_grad():
-    outputs = evaluator.parallel_forward(image, labels) #evaluator.forward(image, labels) #parallel_forward
-    for i in range(len(outputs)):
-        print(f"Shape of output {i}: {outputs[i].shape}")
-    #outputs = model(image,labels)
+    outputs = model(image,labels)
     predicts = [
         torch.max(output, 1)[1].cpu().numpy() 
         for output in outputs
