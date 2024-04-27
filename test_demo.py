@@ -305,8 +305,8 @@ if isinstance(module.net, BaseNet):
 else:
     model = module
     
+model = model.cuda()
 model = model.eval()
-model = model.cpu()
 scales = (
     [0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25]
     if args.dataset == "citys"
