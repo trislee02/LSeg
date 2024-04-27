@@ -200,6 +200,7 @@ class LSeg(BaseModel):
 
         # normalized features
         image_features = image_features / image_features.norm(dim=-1, keepdim=True)
+        
         text_features = text_features / text_features.norm(dim=-1, keepdim=True)
         
         logits_per_image = self.logit_scale * image_features.half() @ text_features.t()

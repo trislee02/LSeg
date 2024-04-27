@@ -306,7 +306,7 @@ image = image.cuda()
 print("Image cuda: ", image.is_cuda)
 # plt.imshow(img)
 
-args.label_src = 'plant,grass,cat,stone,other'
+args.label_src = 'plant,grass,cat,other'
 
 labels = []
 print('** Input label value: {} **'.format(args.label_src))
