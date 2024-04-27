@@ -39,7 +39,10 @@ class LSegmentationModule(pl.LightningModule):
         self.scaler = amp.GradScaler(enabled=self.enabled)
 
     def forward(self, x):
-        return self.net(x)
+        print(f"Input shape: {x.shape}")
+        out = self.net(x)
+        print(f"Output shape: {out.shape}")
+        return out
 
     def evaluate(self, x, target=None):
         pred = self.net.forward(x)
