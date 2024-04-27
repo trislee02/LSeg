@@ -328,6 +328,7 @@ crop_size = 480
 padding = [0.0] * 3
 image = Image.open(img_path)
 image = np.array(image)
+print("Image shape: ", image.shape)
 transform = transforms.Compose(
     [
         transforms.ToTensor(),
@@ -359,7 +360,6 @@ with torch.no_grad():
     ]
     
 predict = predicts[0]
-
 print(f"Shape of predict: {predict.shape}")
 # show results
 new_palette = get_new_pallete(len(labels))
