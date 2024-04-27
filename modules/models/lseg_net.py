@@ -168,6 +168,7 @@ class LSeg(BaseModel):
         self.text = clip.tokenize(self.labels)    
         
     def forward(self, x, labelset=''):
+        print("x is on cuda: ", x.is_cuda)
         if labelset == '':
             text = self.text
         else:
@@ -189,7 +190,6 @@ class LSeg(BaseModel):
         path_1 = self.scratch.refinenet1(path_2, layer_1_rn)
 
         text = text.to(x.device)
-        print("Text cuda: ", text.is_cuda)
         self.logit_scale = self.logit_scale.to(x.device)
         text_features = self.clip_pretrained.encode_text(text)
 
