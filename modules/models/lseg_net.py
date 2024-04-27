@@ -174,6 +174,7 @@ class LSeg(BaseModel):
             text = clip.tokenize(labelset)    
         
         print(f"Text length: {len(text)}")
+        print(f"Image shape: {x.shape}")
 
         if self.channels_last == True:
             x.contiguous(memory_format=torch.channels_last)
@@ -192,25 +193,25 @@ class LSeg(BaseModel):
 
         text = text.to(x.device)
         self.logit_scale = self.logit_scale.to(x.device)
+        # Encode text features
         text_features = self.clip_pretrained.encode_text(text)
         print(f"Text features shape: {text_features.shape}")
 
+        # Get image features
         image_features = self.scratch.head1(path_1)
         print(f"Image features shape: {image_features.shape}")
 
         imshape = image_features.shape
-
         image_features = image_features.permute(0,2,3,1).reshape(-1, self.out_c)
+        print(f"Image features shape (after reshaped and permute): {image_features.shape}")
 
         # normalized features
         image_features = image_features / image_features.norm(dim=-1, keepdim=True)
-
         text_features = text_features / text_features.norm(dim=-1, keepdim=True)
         
         print(f"Logit scale shape: {self.logit_scale.shape}")
 
         logits_per_image = self.logit_scale * image_features.half() @ text_features.t()
-
         print(f"Logits per image shape: {logits_per_image.shape}")
 
         out = logits_per_image.float().view(imshape[0], imshape[2], imshape[3], -1).permute(0,3,1,2)
@@ -228,7 +229,12 @@ class LSeg(BaseModel):
         out_2 = self.scratch.output_conv_2(out)
         out_3 = self.scratch.output_conv_3(out)
         out_4 = self.scratch.output_conv_4(out)
-            
+        
+        print(f"Out 1 shape: {out_1.shape}")
+        print(f"Out 2 shape: {out_2.shape}")
+        print(f"Out 3 shape: {out_3.shape}")
+        print(f"Out 4 shape: {out_4.shape}")
+        
         return out_1, out_2, out_3, out_4
 
 
