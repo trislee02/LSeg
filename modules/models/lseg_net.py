@@ -104,7 +104,6 @@ def _make_fusion_block(features, use_bn):
 class LSeg(BaseModel):
     def __init__(
         self,
-        head,
         features=256,
         backbone="clip_vitl16_384",
         readout="project",
