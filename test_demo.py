@@ -350,6 +350,7 @@ for line in lines:
 
 with torch.no_grad():
     outputs = evaluator.parallel_forward(image, labels) #evaluator.forward(image, labels) #parallel_forward
+    print(f"Shape of outputs: {outputs.shape}")
     #outputs = model(image,labels)
     predicts = [
         torch.max(output, 1)[1].cpu().numpy() 
@@ -358,6 +359,7 @@ with torch.no_grad():
     
 predict = predicts[0]
 
+print(f"Shape of predict: {predict.shape}")
 # show results
 new_palette = get_new_pallete(len(labels))
 mask, patches = get_new_mask_pallete(predict, new_palette, out_label_flag=True, labels=labels)
