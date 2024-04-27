@@ -327,6 +327,7 @@ print(f"Shape of predict: {predict.shape}")
 # show results
 new_palette = get_new_pallete(len(labels))
 mask, patches = get_new_mask_pallete(predict, new_palette, out_label_flag=True, labels=labels)
+image = image.cpu()
 img = image[0].permute(1,2,0)
 img = img * 0.5 + 0.5
 img = Image.fromarray(np.uint8(255*img)).convert("RGBA")
