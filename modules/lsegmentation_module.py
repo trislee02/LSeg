@@ -1,3 +1,4 @@
+import os
 import types
 import time
 import random
@@ -12,6 +13,7 @@ from argparse import ArgumentParser
 import pytorch_lightning as pl
 
 from data import get_dataset, get_available_datasets
+from data.datasets.grasp_anything import GraspAnythingDataset
 
 from encoding.models import get_segmentation_model
 from encoding.nn import SegmentationLosses
@@ -192,48 +194,38 @@ class LSegmentationModule(pl.LightningModule):
             num_workers=16,
         )
 
-    # TODO-TRI: Modify this to fit the new dataset
-    def get_trainset(self, dset, augment=False, **kwargs):
-        print(kwargs)
-        if augment == True:
-            mode = "train_x"
-        else:
-            mode = "train"
-
-        print(mode)
-        dset = get_dataset(
-            dset,
-            root=self.data_path,
-            split="train",
-            mode=mode,
-            transform=self.train_transform,
-            **kwargs
-        )
-
-        self.num_classes = dset.num_class
+    def get_trainset(self, data_path):
+        # self.num_classes = dset.num_class
         self.train_accuracy = torchmetrics.Accuracy()
+        
+        data_path = os.path.join(data_path, "train")
 
-        return dset
+        # TODO-TRI: Modify hard-coded values
+        dataset = GraspAnythingDataset(data_path,
+                                        output_size=224,
+                                        ds_rotate=0,
+                                        random_rotate=True,
+                                        random_zoom=True,
+                                        include_depth=False,
+                                        include_rgb=True)
 
-    # TODO-TRI: Modify this to fit the new dataset
+        return dataset
+
     def get_valset(self, dset, augment=False, **kwargs):
         self.val_accuracy = torchmetrics.Accuracy()
         self.val_iou = SegmentationMetric(self.num_classes)
+        
+        data_path = os.path.join(data_path, "val")
 
-        if augment == True:
-            mode = "val_x"
-        else:
-            mode = "val"
-
-        print(mode)
-        return get_dataset(
-            dset,
-            root=self.data_path,
-            split="val",
-            mode=mode,
-            transform=self.val_transform,
-            **kwargs
-        )
+        # TODO-TRI: Modify hard-coded values
+        dataset = GraspAnythingDataset(data_path,
+                                        output_size=224,
+                                        ds_rotate=0,
+                                        random_rotate=True,
+                                        random_zoom=True,
+                                        include_depth=False,
+                                        include_rgb=True)
+        return dataset
 
 
     def get_criterion(self, **kwargs):

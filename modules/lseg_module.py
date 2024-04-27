@@ -19,7 +19,6 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import pandas as pd
 
-
 class LSegModule(LSegmentationModule):
     def __init__(self, data_path, dataset, batch_size, base_lr, max_epochs, **kwargs):
         super(LSegModule, self).__init__(
@@ -51,20 +50,16 @@ class LSegModule(LSegmentationModule):
 
         self.train_transform = transforms.Compose(train_transform)
         self.val_transform = transforms.Compose(val_transform)
-
-        self.trainset = self.get_trainset(
-            dataset,
-            augment=kwargs["augment"],
-            base_size=self.base_size,
-            crop_size=self.crop_size,
-        )
         
-        self.valset = self.get_valset(
-            dataset,
-            augment=kwargs["augment"],
-            base_size=self.base_size,
-            crop_size=self.crop_size,
+        self.trainset = self.get_trainset(
+            data_path=os.path.join(data_path, "seen")
         )
+
+        self.valset = self.get_valset(
+            data_path=os.path.join(data_path, "seen")
+        )        
+
+        print('** Trainset size: {}, Valset size: {} **'.format(len(self.trainset), len(self.valset)))
 
         use_batchnorm = (
             (not kwargs["no_batchnorm"]) if "no_batchnorm" in kwargs else True
