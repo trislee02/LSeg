@@ -168,12 +168,13 @@ class LSeg(BaseModel):
         self.text = clip.tokenize(self.labels)    
         
     def forward(self, x, labelset=''):
-        print("x is on cuda: ", x.is_cuda)
         if labelset == '':
             text = self.text
         else:
             text = clip.tokenize(labelset)    
         
+        print(f"Text length: {len(text)}")
+
         if self.channels_last == True:
             x.contiguous(memory_format=torch.channels_last)
 
@@ -200,17 +201,27 @@ class LSeg(BaseModel):
 
         # normalized features
         image_features = image_features / image_features.norm(dim=-1, keepdim=True)
-        
+
         text_features = text_features / text_features.norm(dim=-1, keepdim=True)
         
+        print(f"Image features shape: {image_features.shape}")
+        print(f"Text features shape: {text_features.shape}")
+        print(f"Logit scale shape: {self.logit_scale.shape}")
+
         logits_per_image = self.logit_scale * image_features.half() @ text_features.t()
 
+        print(f"Logits per image shape: {logits_per_image.shape}")
+
         out = logits_per_image.float().view(imshape[0], imshape[2], imshape[3], -1).permute(0,3,1,2)
+
+        print(f"Out (before headblock) shape: {out.shape}")
 
         if self.arch_option in [1, 2]:
             for _ in range(self.block_depth - 1):
                 out = self.scratch.head_block(out)
             out = self.scratch.head_block(out, False)
+
+        print(f"Out (after headblock) shape: {out.shape}")
 
         out_1 = self.scratch.output_conv_1(out)
         out_2 = self.scratch.output_conv_2(out)
