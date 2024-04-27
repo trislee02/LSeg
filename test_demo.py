@@ -302,7 +302,8 @@ transform = transforms.Compose(
 image = transform(image).unsqueeze(0)
 img = image[0].permute(1,2,0)
 img = img * 0.5 + 0.5
-img = img.to('cuda:0')
+img = img.cuda()
+print("Image cuda: ", img.is_cuda)
 # plt.imshow(img)
 
 args.label_src = 'plant,grass,cat,stone,other'

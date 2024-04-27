@@ -189,6 +189,7 @@ class LSeg(BaseModel):
         path_1 = self.scratch.refinenet1(path_2, layer_1_rn)
 
         text = text.to(x.device)
+        print("Text cuda: ", text.is_cuda)
         self.logit_scale = self.logit_scale.to(x.device)
         text_features = self.clip_pretrained.encode_text(text)
 
