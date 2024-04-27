@@ -193,10 +193,13 @@ class LSeg(BaseModel):
         text = text.to(x.device)
         self.logit_scale = self.logit_scale.to(x.device)
         text_features = self.clip_pretrained.encode_text(text)
+        print(f"Text features shape: {text_features.shape}")
 
         image_features = self.scratch.head1(path_1)
+        print(f"Image features shape: {image_features.shape}")
 
         imshape = image_features.shape
+
         image_features = image_features.permute(0,2,3,1).reshape(-1, self.out_c)
 
         # normalized features
@@ -204,8 +207,6 @@ class LSeg(BaseModel):
 
         text_features = text_features / text_features.norm(dim=-1, keepdim=True)
         
-        print(f"Image features shape: {image_features.shape}")
-        print(f"Text features shape: {text_features.shape}")
         print(f"Logit scale shape: {self.logit_scale.shape}")
 
         logits_per_image = self.logit_scale * image_features.half() @ text_features.t()
