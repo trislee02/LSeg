@@ -267,7 +267,13 @@ args.backbone = 'clip_vitl16_384'
 args.weights = 'checkpoints/demo_e200.ckpt'
 args.ignore_index = 255
 
-model = LSegNet('')
+model = LSegNet(labels='',
+                backbone=args.backbone,
+                features=256,
+                crop_size=280,
+                arch_option=args.arch_option,
+                block_depth=args.block_depth,
+                activation=args.activation)
 
 model = model.cuda()
 model = model.eval()
