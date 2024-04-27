@@ -317,6 +317,7 @@ for line in lines:
 
 with torch.no_grad():
     outputs = model(image,labels)
+    print(f"Outputs shape: {outputs[0].shape}")
     predicts = [
         torch.max(output, 1)[1].cpu().numpy() 
         for output in outputs
