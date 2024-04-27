@@ -337,7 +337,7 @@ transform = transforms.Compose(
 image = transform(image).unsqueeze(0)
 img = image[0].permute(1,2,0)
 img = img * 0.5 + 0.5
-plt.imshow(img)
+# plt.imshow(img)
 
 args.label_src = 'plant,grass,cat,stone,other'
 
@@ -366,11 +366,11 @@ img = img * 0.5 + 0.5
 img = Image.fromarray(np.uint8(255*img)).convert("RGBA")
 seg = mask.convert("RGBA")
 out = Image.blend(img, seg, alpha)
-plt.axis('off')
-plt.imshow(img)
-plt.figure()
-plt.legend(handles=patches, loc='upper right', bbox_to_anchor=(1.5, 1), prop={'size': 20})
-plt.axis('off')
-plt.imshow(seg)
+# plt.axis('off')
+# plt.imshow(img)
+# plt.figure()
+# plt.legend(handles=patches, loc='upper right', bbox_to_anchor=(1.5, 1), prop={'size': 20})
+# plt.axis('off')
+# plt.imshow(seg)
 
 
