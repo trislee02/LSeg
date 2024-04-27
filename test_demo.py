@@ -1,8 +1,8 @@
 
 import os
-#os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 import torch
-torch.cuda.device_count()
+print(f"Number of GPUs: {torch.cuda.device_count()}")
 
 import os
 import argparse
