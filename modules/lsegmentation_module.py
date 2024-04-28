@@ -71,7 +71,7 @@ class LSegmentationModule(pl.LightningModule):
         print("Calling training step...")        
         with amp.autocast(enabled=self.enabled):
             out = self(img)
-            F.smooth_l1_loss(out, target)
+            loss = F.smooth_l1_loss(out, target)
             # multi_loss = isinstance(out, tuple)
             # if multi_loss:
             #     loss = self.criterion(*out, target)
