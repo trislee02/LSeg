@@ -38,9 +38,6 @@ class LSegmentationModule(pl.LightningModule):
         self.enabled = False #True mixed precision will make things complicated and leading to NAN error
         self.scaler = amp.GradScaler(enabled=self.enabled)
 
-        # Manual optimization
-        self.automatic_optimization = False
-
     def forward(self, x):
         out = self.net(x)
         return out
@@ -70,10 +67,7 @@ class LSegmentationModule(pl.LightningModule):
 
     def training_step(self, batch, batch_nb):
         img, target = batch
-        print("Calling training step...")
-        opt = self.optimizers()
-        opt.zero_grad()
-        
+        print("Calling training step...")        
         with amp.autocast(enabled=self.enabled):
             out = self(img)
             multi_loss = isinstance(out, tuple)
@@ -87,11 +81,8 @@ class LSegmentationModule(pl.LightningModule):
         if train_gt.nelement() != 0:
             self.train_accuracy(train_pred, train_gt)
         self.log("train_loss", loss)
-        
-        self.manual_backward(loss)
-        opt.step()
-
-        # return loss
+        print(loss)
+        return loss
 
     def training_epoch_end(self, outs):
         self.log("train_acc_epoch", self.train_accuracy.compute())
