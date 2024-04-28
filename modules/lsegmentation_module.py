@@ -39,9 +39,7 @@ class LSegmentationModule(pl.LightningModule):
         self.scaler = amp.GradScaler(enabled=self.enabled)
 
     def forward(self, x):
-        print(f"Input shape: {x.shape}")
         out = self.net(x)
-        print(f"Output shape: {out.shape}")
         return out
 
     def evaluate(self, x, target=None):
@@ -69,6 +67,7 @@ class LSegmentationModule(pl.LightningModule):
 
     def training_step(self, batch, batch_nb):
         img, target = batch
+        print("Calling training step...")
         with amp.autocast(enabled=self.enabled):
             out = self(img)
             multi_loss = isinstance(out, tuple)
