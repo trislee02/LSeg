@@ -4,6 +4,7 @@ import random
 import clip
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import torchvision.transforms as transforms
 import torchmetrics
 
@@ -70,13 +71,14 @@ class LSegmentationModule(pl.LightningModule):
         print("Calling training step...")        
         with amp.autocast(enabled=self.enabled):
             out = self(img)
-            multi_loss = isinstance(out, tuple)
-            if multi_loss:
-                loss = self.criterion(*out, target)
-            else:
-                loss = self.criterion(out, target)
+            F.smooth_l1_loss(out, target)
+            # multi_loss = isinstance(out, tuple)
+            # if multi_loss:
+            #     loss = self.criterion(*out, target)
+            # else:
+            #     loss = self.criterion(out, target)
             loss = self.scaler.scale(loss)
-        final_output = out[0] if multi_loss else out
+        final_output = out # out[0] if multi_loss else out
         train_pred, train_gt = self._filter_invalid(final_output, target)
         if train_gt.nelement() != 0:
             self.train_accuracy(train_pred, train_gt)
