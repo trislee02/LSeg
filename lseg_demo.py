@@ -320,7 +320,7 @@ evaluator = LSeg_MultiEvalModule(
 ).cuda()
 evaluator.eval()
 
-img_path = 'inputs/coffee.jpeg'
+img_path = 'inputs/coffee.jpg'
 #img_path = 'inputs/catdog.png'
 crop_size = 480
 padding = [0.0] * 3

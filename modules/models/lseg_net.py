@@ -11,6 +11,8 @@ import numpy as np
 import pandas as pd
 import os
 
+import matplotlib.pyplot as plt
+
 class depthwise_clipseg_conv(nn.Module):
     def __init__(self):
         super(depthwise_clipseg_conv, self).__init__()
@@ -200,6 +202,14 @@ class LSeg(BaseModel):
         # Get image features
         image_features = self.scratch.head1(path_1)
         # print(f"Image features shape: {image_features.shape}") # [1, 512, 208, 208] # 208x208 is the W/2xH/2 size of the input
+        
+        # Visualize image features
+        fig, ax = plt.subplots(nrows=2, ncols=5)
+        for r, row in enumerate(ax):
+            for c, col in enumerate(row):
+                col.plot(image_features[0, r+c, 100, 100].detach().cpu().numpy())
+
+        plt.savefig("image_features.png")
 
         imshape = image_features.shape
         image_features = image_features.permute(0,2,3,1).reshape(-1, self.out_c)
