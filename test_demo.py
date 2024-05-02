@@ -267,13 +267,31 @@ args.backbone = 'clip_vitl16_384'
 args.weights = 'checkpoints/demo_e200.ckpt'
 args.ignore_index = 255
 
-model = LSegNet(labels='',
-                backbone=args.backbone,
-                features=256,
-                crop_size=280,
-                arch_option=args.arch_option,
-                block_depth=args.block_depth,
-                activation=args.activation)
+model = LSegModule.load_from_checkpoint(
+    checkpoint_path=args.weights,
+    data_path=args.data_path,
+    dataset=args.dataset,
+    backbone=args.backbone,
+    aux=args.aux,
+    num_features=256,
+    aux_weight=0,
+    se_loss=False,
+    se_weight=0,
+    base_lr=0,
+    batch_size=1,
+    max_epochs=0,
+    ignore_index=args.ignore_index,
+    dropout=0.0,
+    scale_inv=args.scale_inv,
+    augment=False,
+    no_batchnorm=False,
+    widehead=args.widehead,
+    widehead_hr=args.widehead_hr,
+    map_locatin="cpu",
+    arch_option=0,
+    block_depth=0,
+    activation='lrelu',
+)
 
 model = model.cuda()
 model = model.eval()
@@ -304,7 +322,7 @@ img = image[0].permute(1,2,0)
 img = img * 0.5 + 0.5
 image = image.cuda()
 print("Image cuda: ", image.is_cuda)
-# plt.imshow(img)
+plt.imshow(img)
 
 args.label_src = 'plant,grass,cat,other'
 
@@ -334,11 +352,11 @@ img = img * 0.5 + 0.5
 img = Image.fromarray(np.uint8(255*img)).convert("RGBA")
 seg = mask.convert("RGBA")
 out = Image.blend(img, seg, alpha)
-# plt.axis('off')
-# plt.imshow(img)
-# plt.figure()
-# plt.legend(handles=patches, loc='upper right', bbox_to_anchor=(1.5, 1), prop={'size': 20})
-# plt.axis('off')
-# plt.imshow(seg)
+plt.axis('off')
+plt.imshow(img)
+plt.figure()
+plt.legend(handles=patches, loc='upper right', bbox_to_anchor=(1.5, 1), prop={'size': 20})
+plt.axis('off')
+plt.imshow(seg)
 
 
