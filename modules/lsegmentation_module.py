@@ -67,8 +67,7 @@ class LSegmentationModule(pl.LightningModule):
     
 
     def training_step(self, batch, batch_nb):
-        img, target = batch
-        print("Calling training step...")        
+        img, target = batch  
         with amp.autocast(enabled=self.enabled):
             out = self(img)
             multi_loss = isinstance(out, tuple)
@@ -77,12 +76,11 @@ class LSegmentationModule(pl.LightningModule):
             else:
                 loss = self.criterion(out, target)
             loss = self.scaler.scale(loss)
-        final_output = out # out[0] if multi_loss else out
+        final_output = out[0] if multi_loss else out
         train_pred, train_gt = self._filter_invalid(final_output, target)
         if train_gt.nelement() != 0:
             self.train_accuracy(train_pred, train_gt)
         self.log("train_loss", loss)
-        print(loss)
         return loss
 
     def training_epoch_end(self, outs):
