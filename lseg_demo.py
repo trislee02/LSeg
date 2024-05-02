@@ -320,7 +320,7 @@ evaluator = LSeg_MultiEvalModule(
 ).cuda()
 evaluator.eval()
 
-img_path = 'inputs/cat1.jpeg'
+img_path = 'inputs/coffee.jpeg'
 #img_path = 'inputs/catdog.png'
 crop_size = 480
 padding = [0.0] * 3
@@ -337,7 +337,7 @@ img = image[0].permute(1,2,0)
 img = img * 0.5 + 0.5
 plt.imshow(img)
 
-args.label_src = 'plant,grass,cat,stone,other'
+args.label_src = 'spoon,cup,other'
 
 labels = []
 print('** Input label value: {} **'.format(args.label_src))
