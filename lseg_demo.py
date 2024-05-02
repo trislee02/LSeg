@@ -371,5 +371,5 @@ plt.figure()
 plt.legend(handles=patches, loc='upper right', bbox_to_anchor=(1.5, 1), prop={'size': 20})
 plt.axis('off')
 plt.imshow(seg)
-
+plt.savefig('segmented.png')
 
