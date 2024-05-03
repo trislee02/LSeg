@@ -371,17 +371,13 @@ with torch.no_grad():
     output, out_logit = model(image, labels, features_only=True)
 
     out = out_logit
-    fig, ax = plt.subplots(nrows=1, ncols=len(labels))
-    if len(labels) == 1:
-        img = out[0][0].detach().cpu().numpy()
-        img = (img - img.min()) / (img.max() - img.min())
-        ax.imshow(img, cmap='gray')
-    else:    
-        for r, row in enumerate(ax):
-            img = out[0][r].detach().cpu().numpy()
+    fig, ax = plt.subplots(nrows=5, ncols=7)
+    for r, row in enumerate(ax):
+        for c, col in enumerate(row):
+            img = out[0][r*len(row) + c].detach().cpu().numpy()
             img = (img - img.min()) / (img.max() - img.min())
-            row.imshow(img, cmap='gray')
-    plt.savefig(f"{args.label_src}-logits.png")
+            col.imshow(img, cmap='gray')
+    plt.savefig(f"{args.label_src}-image_features.png")
 
     # out = output
     # fig, ax = plt.subplots(nrows=1, ncols=len(labels))
