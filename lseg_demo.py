@@ -333,10 +333,10 @@ scales = (
 model.mean = [0.5, 0.5, 0.5]
 model.std = [0.5, 0.5, 0.5]
 
-evaluator = LSeg_MultiEvalModule(
-    model, scales=scales, flip=True
-).cuda()
-evaluator.eval()
+# evaluator = LSeg_MultiEvalModule(
+#     model, scales=scales, flip=True
+# ).cuda()
+# evaluator.eval()
 
 img_path = 'inputs/coffee.jpg'
 #img_path = 'inputs/catdog.png'
