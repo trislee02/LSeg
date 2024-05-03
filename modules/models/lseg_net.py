@@ -238,6 +238,14 @@ class LSeg(BaseModel):
 
         out = self.scratch.output_conv(out)
             
+        fig, ax = plt.subplots(nrows=1, ncols=text.shape[0])
+        for r, row in enumerate(ax):
+            img = out[0][r].detach().cpu().numpy()
+            img = (img - img.min()) / (img.max() - img.min())
+            row.imshow(img, cmap='gray')
+        labelset = ", ".join(labelset)
+        plt.savefig(f"{labelset}_output.png")
+
         return out
 
 
