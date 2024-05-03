@@ -298,12 +298,6 @@ loader_kwargs = (
     {"num_workers": args.workers, "pin_memory": True} if args.cuda else {}
 )
 
-# model
-if isinstance(module.net, BaseNet):
-    model = module.net
-else:
-    model = module
-
 def get_image_feature():
     def hook(model, input, output):
         # Visualize image features
@@ -320,7 +314,13 @@ def get_image_feature():
 
     return hook
 
-model.scratch.head1.register_forward_hook(get_image_feature())
+# model
+if isinstance(module.net, BaseNet):
+    model = module.net
+    model.scratch.head1.register_forward_hook(get_image_feature())
+else:
+    model = module
+    model.net.scratch.head1.register_forward_hook(get_image_feature())
     
 model = model.eval()
 model = model.cpu()
