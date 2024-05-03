@@ -104,10 +104,11 @@ def _make_fusion_block(features, use_bn):
         expand=False,
         align_corners=True,
     )
-
+      
 class LSeg(BaseModel):
     def __init__(
         self,
+        head,
         features=256,
         backbone="clip_vitl16_384",
         readout="project",
@@ -156,18 +157,7 @@ class LSeg(BaseModel):
             self.scratch.head_block = depthwise_block(activation=kwargs["activation"])
             self.block_depth = kwargs['block_depth']
 
-        self.scratch.output_conv_1 = nn.Sequential(
-            Interpolate(scale_factor=2, mode="bilinear", align_corners=True),
-        )
-        self.scratch.output_conv_2 = nn.Sequential(
-            Interpolate(scale_factor=2, mode="bilinear", align_corners=True),
-        )
-        self.scratch.output_conv_3 = nn.Sequential(
-            Interpolate(scale_factor=2, mode="bilinear", align_corners=True),
-        )
-        self.scratch.output_conv_4 = nn.Sequential(
-            Interpolate(scale_factor=2, mode="bilinear", align_corners=True),
-        )
+        self.scratch.output_conv = head
 
         self.text = clip.tokenize(self.labels)    
         
@@ -197,14 +187,12 @@ class LSeg(BaseModel):
 
         text = text.to(x.device)
         self.logit_scale = self.logit_scale.to(x.device)
-        # Encode text features
         text_features = self.clip_pretrained.encode_text(text)
         # print(f"Text features shape: {text_features.shape}") # [4, 512] # 4 is the number of token in a label
 
-        # Get image features
         image_features = self.scratch.head1(path_1)
         # print(f"Image features shape: {image_features.shape}") # [1, 512, 208, 208] # 208x208 is the W/2xH/2 size of the input
-        
+
         # Visualize image features
         fig, ax = plt.subplots(nrows=2, ncols=5)
         for r, row in enumerate(ax):
@@ -230,7 +218,7 @@ class LSeg(BaseModel):
         logits_per_image = self.logit_scale * image_features.half() @ text_features.t()
         # print(f"Logits per image shape: {logits_per_image.shape}") # [43264, 4]
 
-        out = logits_per_image.float().view(imshape[0], imshape[2], imshape[3], -1).permute(0,3,1,2) 
+        out = logits_per_image.float().view(imshape[0], imshape[2], imshape[3], -1).permute(0,3,1,2)
 
         fig, ax = plt.subplots(nrows=1, ncols=text.shape[0])
         for r, row in enumerate(ax):
@@ -248,14 +236,9 @@ class LSeg(BaseModel):
 
         # print(f"Out (after headblock) shape: {out.shape}") # [1, 4, 208, 208]
 
-        out_1 = self.scratch.output_conv_1(out)
-        out_2 = self.scratch.output_conv_2(out)
-        out_3 = self.scratch.output_conv_3(out)
-        out_4 = self.scratch.output_conv_4(out)
-        
-        final_out = out_1 + out_2 + out_3 + out_4
-
-        return final_out
+        out = self.scratch.output_conv(out)
+            
+        return out
 
 
 class LSegNet(LSeg):
@@ -269,12 +252,11 @@ class LSegNet(LSeg):
         self.scale_factor = scale_factor
         self.labels = labels
 
-        super().__init__(**kwargs)
+        head = nn.Sequential(
+            Interpolate(scale_factor=2, mode="bilinear", align_corners=True),
+        )
+
+        super().__init__(head, **kwargs)
 
         if path is not None:
             self.load(path)
-
-
-    
-        
-    
