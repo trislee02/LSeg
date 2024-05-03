@@ -209,7 +209,7 @@ class LSeg(BaseModel):
         fig, ax = plt.subplots(nrows=2, ncols=5)
         for r, row in enumerate(ax):
             for c, col in enumerate(row):
-                img = image_features[0, r+c, 100, 100].detach().cpu().permute(1, 2, 0).numpy()
+                img = image_features[0][r+c].detach().cpu().numpy()
                 img = img * 0.5 + 0.5
                 img = Image.fromarray(np.uint8(255*img)).convert("RGBA")
                 col.imshow(img)
