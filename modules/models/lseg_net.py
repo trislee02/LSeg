@@ -212,7 +212,9 @@ class LSeg(BaseModel):
                 img = image_features[0][r+c].detach().cpu().numpy()
                 # img = img * 0.5 + 0.5
                 # img = Image.fromarray(np.uint8(255*img)).convert("RGBA")
-                print(f"Channel #{r+c}: max: {img.max()}, min: {img.min()}")
+                print(f"Channel #{r*len(row)+c}: max: {img.max()}, min: {img.min()}")
+                # Normalize image
+                img = (img - img.min()) / (img.max() - img.min())
                 col.imshow(img, cmap='gray')
 
         plt.savefig("image_features.png")
