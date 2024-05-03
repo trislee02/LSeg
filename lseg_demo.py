@@ -315,12 +315,12 @@ def get_image_feature():
     return hook
 
 # model
-if isinstance(module.net, BaseNet):
-    model = module.net
-    model.scratch.head1.register_forward_hook(get_image_feature())
-else:
-    model = module
-    model.net.scratch.head1.register_forward_hook(get_image_feature())
+model = module.net
+model.scratch.head1.register_forward_hook(get_image_feature())
+# if isinstance(module.net, BaseNet):
+# else:
+#     model = module
+#     model.net.scratch.head1.register_forward_hook(get_image_feature())
     
 model = model.eval()
 model = model.cpu()
