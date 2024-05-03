@@ -210,9 +210,10 @@ class LSeg(BaseModel):
         for r, row in enumerate(ax):
             for c, col in enumerate(row):
                 img = image_features[0][r+c].detach().cpu().numpy()
-                img = img * 0.5 + 0.5
-                img = Image.fromarray(np.uint8(255*img)).convert("RGBA")
-                col.imshow(img)
+                # img = img * 0.5 + 0.5
+                # img = Image.fromarray(np.uint8(255*img)).convert("RGBA")
+                print(f"Channel #{r+c}: max: {img.max()}, min: {img.min()}")
+                col.imshow(img, cmap='gray')
 
         plt.savefig("image_features.png")
 
