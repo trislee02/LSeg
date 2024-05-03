@@ -367,9 +367,9 @@ for line in lines:
 with torch.no_grad():
     # outputs, out_logits = evaluator.parallel_forward(image, labels, True) #evaluator.forward(image, labels) #parallel_forward
     image = image.cuda()
-    outputs, out_logits = model(image, labels, True)
+    output, out_logit = model(image, labels, True)
 
-    out = out_logits[0]
+    out = out_logit
     fig, ax = plt.subplots(nrows=1, ncols=len(labels))
     for r, row in enumerate(ax):
         img = out[0][r].detach().cpu().numpy()
@@ -377,7 +377,7 @@ with torch.no_grad():
         row.imshow(img, cmap='gray')
     plt.savefig(f"{args.label_src}-logits.png")
 
-    out = outputs[0]
+    out = output
     fig, ax = plt.subplots(nrows=1, ncols=len(labels))
     for r, row in enumerate(ax):
         img = out[0][r].detach().cpu().numpy()
@@ -385,10 +385,7 @@ with torch.no_grad():
         row.imshow(img, cmap='gray')
     plt.savefig(f"{args.label_src}-received-output.png")
     
-    predicts = [
-        torch.max(output, 1)[1].cpu().numpy() 
-        for output in outputs
-    ]
+    predicts = [torch.max(output, 1)[1].cpu().numpy()]
     
 predict = predicts[0]
 
