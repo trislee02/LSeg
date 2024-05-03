@@ -303,6 +303,25 @@ if isinstance(module.net, BaseNet):
     model = module.net
 else:
     model = module
+
+def get_image_feature():
+    def hook(model, input, output):
+        # Visualize image features
+        fig, ax = plt.subplots(nrows=2, ncols=5)
+        for r, row in enumerate(ax):
+            for c, col in enumerate(row):
+                img = output[0][r*len(row)+c].detach().cpu().numpy()
+                # print(f"Channel #{r*len(row)+c}: max: {img.max()}, min: {img.min()}")
+                # Normalize image
+                img = (img - img.min()) / (img.max() - img.min())
+                col.imshow(img, cmap='gray')
+
+        plt.savefig(f"image_features.png")
+
+    return hook
+
+model.scratch.head1.register_forward_hook(get_image_feature())
+model.
     
 model = model.eval()
 model = model.cpu()

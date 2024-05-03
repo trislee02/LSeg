@@ -161,7 +161,7 @@ class LSeg(BaseModel):
 
         self.text = clip.tokenize(self.labels)    
         
-    def forward(self, x, labelset=''):
+    def forward(self, x, labelset='', debug=False):
         if labelset == '':
             text = self.text
         else:
@@ -194,18 +194,6 @@ class LSeg(BaseModel):
         image_features = self.scratch.head1(path_1)
         # print(f"Image features shape: {image_features.shape}") # [1, 512, 208, 208] # 208x208 is the W/2xH/2 size of the input
 
-        # Visualize image features
-        fig, ax = plt.subplots(nrows=2, ncols=5)
-        for r, row in enumerate(ax):
-            for c, col in enumerate(row):
-                img = image_features[0][r*len(row)+c].detach().cpu().numpy()
-                # print(f"Channel #{r*len(row)+c}: max: {img.max()}, min: {img.min()}")
-                # Normalize image
-                img = (img - img.min()) / (img.max() - img.min())
-                col.imshow(img, cmap='gray')
-
-        plt.savefig(f"{labelset}-image_features.png")
-
         imshape = image_features.shape
         image_features = image_features.permute(0,2,3,1).reshape(-1, self.out_c)
         # print(f"Image features shape (after reshaped and permute): {image_features.shape}") # [43264, 512] 
@@ -221,12 +209,14 @@ class LSeg(BaseModel):
 
         out = logits_per_image.float().view(imshape[0], imshape[2], imshape[3], -1).permute(0,3,1,2)
 
-        fig, ax = plt.subplots(nrows=1, ncols=text.shape[0])
-        for r, row in enumerate(ax):
-            img = out[0][r].detach().cpu().numpy()
-            img = (img - img.min()) / (img.max() - img.min())
-            row.imshow(img, cmap='gray')
-        plt.savefig(f"{labelset}-logits_per_image.png")
+        out_logit = out.detach().clone()
+
+        # fig, ax = plt.subplots(nrows=1, ncols=text.shape[0])
+        # for r, row in enumerate(ax):
+        #     img = out[0][r].detach().cpu().numpy()
+        #     img = (img - img.min()) / (img.max() - img.min())
+        #     row.imshow(img, cmap='gray')
+        # plt.savefig(f"{labelset}-logits_per_image.png")
 
         # print(f"Out (before headblock) shape: {out.shape}") # [1, 4, 208, 208]
 
@@ -239,12 +229,15 @@ class LSeg(BaseModel):
 
         out = self.scratch.output_conv(out)
             
-        fig, ax = plt.subplots(nrows=1, ncols=text.shape[0])
-        for r, row in enumerate(ax):
-            img = out[0][r].detach().cpu().numpy()
-            img = (img - img.min()) / (img.max() - img.min())
-            row.imshow(img, cmap='gray')
-        plt.savefig(f"{labelset}-output.png")
+        # fig, ax = plt.subplots(nrows=1, ncols=text.shape[0])
+        # for r, row in enumerate(ax):
+        #     img = out[0][r].detach().cpu().numpy()
+        #     img = (img - img.min()) / (img.max() - img.min())
+        #     row.imshow(img, cmap='gray')
+        # plt.savefig(f"{labelset}-output.png")
+
+        if debug:
+            return out, out_logit
 
         return out
 
