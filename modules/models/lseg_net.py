@@ -13,6 +13,8 @@ import os
 
 import matplotlib.pyplot as plt
 
+from PIL import Image
+
 class depthwise_clipseg_conv(nn.Module):
     def __init__(self):
         super(depthwise_clipseg_conv, self).__init__()
@@ -207,7 +209,10 @@ class LSeg(BaseModel):
         fig, ax = plt.subplots(nrows=2, ncols=5)
         for r, row in enumerate(ax):
             for c, col in enumerate(row):
-                col.imshow(image_features[0, r+c, 100, 100].detach().cpu().numpy())
+                img = image_features[0, r+c, 100, 100].detach().cpu().permute(1, 2, 0).numpy()
+                img = img * 0.5 + 0.5
+                img = Image.fromarray(np.uint8(255*img)).convert("RGBA")
+                col.imshow(img)
 
         plt.savefig("image_features.png")
 
