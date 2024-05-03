@@ -365,8 +365,8 @@ for line in lines:
     labels.append(label)
 
 with torch.no_grad():
-    outputs, out_logits = evaluator.parallel_forward(image, labels, True) #evaluator.forward(image, labels) #parallel_forward
-    #outputs = model(image,labels)
+    # outputs, out_logits = evaluator.parallel_forward(image, labels, True) #evaluator.forward(image, labels) #parallel_forward
+    outputs, out_logits = model(image, labels, True)
 
     out = out_logits[0]
     fig, ax = plt.subplots(nrows=1, ncols=len(labels))
