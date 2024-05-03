@@ -232,7 +232,7 @@ class LSeg(BaseModel):
 
         out = logits_per_image.float().view(imshape[0], imshape[2], imshape[3], -1).permute(0,3,1,2) 
 
-        fig, ax = plt.subplots(nrows=1, ncols=imshape[1])
+        fig, ax = plt.subplots(nrows=1, ncols=3)
         for r, row in enumerate(ax):
             img = out[0][r].detach().cpu().numpy()
             img = (img - img.min()) / (img.max() - img.min())
