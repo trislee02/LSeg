@@ -368,7 +368,7 @@ for line in lines:
 with torch.no_grad():
     # outputs, out_logits = evaluator.parallel_forward(image, labels, True) #evaluator.forward(image, labels) #parallel_forward
     image = image.cuda()
-    output, out_logit = model(image, labels, True)
+    output, out_logit = model(image, labels, features_only=True)
 
     out = out_logit
     fig, ax = plt.subplots(nrows=1, ncols=len(labels))
@@ -383,18 +383,18 @@ with torch.no_grad():
             row.imshow(img, cmap='gray')
     plt.savefig(f"{args.label_src}-logits.png")
 
-    out = output
-    fig, ax = plt.subplots(nrows=1, ncols=len(labels))
-    if len(labels) == 1:
-        img = out[0][0].detach().cpu().numpy()
-        img = (img - img.min()) / (img.max() - img.min())
-        ax.imshow(img, cmap='gray')
-    else:    
-        for r, row in enumerate(ax):
-            img = out[0][r].detach().cpu().numpy()
-            img = (img - img.min()) / (img.max() - img.min())
-            row.imshow(img, cmap='gray')
-    plt.savefig(f"{args.label_src}-received-output.png")
+    # out = output
+    # fig, ax = plt.subplots(nrows=1, ncols=len(labels))
+    # if len(labels) == 1:
+    #     img = out[0][0].detach().cpu().numpy()
+    #     img = (img - img.min()) / (img.max() - img.min())
+    #     ax.imshow(img, cmap='gray')
+    # else:    
+    #     for r, row in enumerate(ax):
+    #         img = out[0][r].detach().cpu().numpy()
+    #         img = (img - img.min()) / (img.max() - img.min())
+    #         row.imshow(img, cmap='gray')
+    # plt.savefig(f"{args.label_src}-received-output.png")
     
     predicts = [torch.max(output, 1)[1].cpu().numpy()]
     
