@@ -265,6 +265,9 @@ args.backbone = 'clip_vitl16_384'
 args.weights = 'checkpoints/demo_e200.ckpt'
 args.ignore_index = 255
 
+args.label_src = 'spoon,cup,other'
+img_path = 'inputs/coffee.jpg'
+
 module = LSegModule.load_from_checkpoint(
     checkpoint_path=args.weights,
     data_path=args.data_path,
@@ -310,7 +313,7 @@ def get_image_feature():
                 img = (img - img.min()) / (img.max() - img.min())
                 col.imshow(img, cmap='gray')
 
-        plt.savefig(f"image_features.png")
+        plt.savefig(f"{args.label_src}-image_features.png")
 
     return hook
 
@@ -338,7 +341,7 @@ model.std = [0.5, 0.5, 0.5]
 # ).cuda()
 # evaluator.eval()
 
-img_path = 'inputs/coffee.jpg'
+
 #img_path = 'inputs/catdog.png'
 crop_size = 480
 padding = [0.0] * 3
@@ -354,8 +357,6 @@ image = transform(image).unsqueeze(0)
 img = image[0].permute(1,2,0)
 img = img * 0.5 + 0.5
 plt.imshow(img)
-
-args.label_src = 'spoon,cup,other'
 
 labels = []
 print('** Input label value: {} **'.format(args.label_src))
