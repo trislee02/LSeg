@@ -232,6 +232,7 @@ class LSeg(BaseModel):
 
         out = logits_per_image.float().view(imshape[0], imshape[2], imshape[3], -1).permute(0,3,1,2) 
 
+        plt.figure()
         img = out[0][0].detach().cpu().numpy()
         img = (img - img.min()) / (img.max() - img.min())
         plt.imshow(img, cmap='gray')
