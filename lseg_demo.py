@@ -372,18 +372,28 @@ with torch.no_grad():
 
     out = out_logit
     fig, ax = plt.subplots(nrows=1, ncols=len(labels))
-    for r, row in enumerate(ax):
-        img = out[0][r].detach().cpu().numpy()
+    if len(labels) == 1:
+        img = out[0][0].detach().cpu().numpy()
         img = (img - img.min()) / (img.max() - img.min())
-        row.imshow(img, cmap='gray')
+        ax.imshow(img, cmap='gray')
+    else:    
+        for r, row in enumerate(ax):
+            img = out[0][r].detach().cpu().numpy()
+            img = (img - img.min()) / (img.max() - img.min())
+            row.imshow(img, cmap='gray')
     plt.savefig(f"{args.label_src}-logits.png")
 
     out = output
     fig, ax = plt.subplots(nrows=1, ncols=len(labels))
-    for r, row in enumerate(ax):
-        img = out[0][r].detach().cpu().numpy()
+    if len(labels) == 1:
+        img = out[0][0].detach().cpu().numpy()
         img = (img - img.min()) / (img.max() - img.min())
-        row.imshow(img, cmap='gray')
+        ax.imshow(img, cmap='gray')
+    else:    
+        for r, row in enumerate(ax):
+            img = out[0][r].detach().cpu().numpy()
+            img = (img - img.min()) / (img.max() - img.min())
+            row.imshow(img, cmap='gray')
     plt.savefig(f"{args.label_src}-received-output.png")
     
     predicts = [torch.max(output, 1)[1].cpu().numpy()]
