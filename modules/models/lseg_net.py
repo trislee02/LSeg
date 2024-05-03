@@ -166,6 +166,7 @@ class LSeg(BaseModel):
             text = self.text
         else:
             text = clip.tokenize(labelset)    
+        labelset = ", ".join(labelset)
         
         # print(f"Text (after tokenize) length: {len(text)}") # 4
         # print(f"Image shape: {x.shape}") # [1, 3, 416, 416] # 416x416 is the input size
@@ -203,7 +204,7 @@ class LSeg(BaseModel):
                 img = (img - img.min()) / (img.max() - img.min())
                 col.imshow(img, cmap='gray')
 
-        plt.savefig("image_features.png")
+        plt.savefig(f"{labelset}-image_features.png")
 
         imshape = image_features.shape
         image_features = image_features.permute(0,2,3,1).reshape(-1, self.out_c)
@@ -225,7 +226,7 @@ class LSeg(BaseModel):
             img = out[0][r].detach().cpu().numpy()
             img = (img - img.min()) / (img.max() - img.min())
             row.imshow(img, cmap='gray')
-        plt.savefig("logits_per_image.png")
+        plt.savefig(f"{labelset}-logits_per_image.png")
 
         # print(f"Out (before headblock) shape: {out.shape}") # [1, 4, 208, 208]
 
@@ -243,8 +244,7 @@ class LSeg(BaseModel):
             img = out[0][r].detach().cpu().numpy()
             img = (img - img.min()) / (img.max() - img.min())
             row.imshow(img, cmap='gray')
-        labelset = ", ".join(labelset)
-        plt.savefig(f"{labelset}_output.png")
+        plt.savefig(f"{labelset}-output.png")
 
         return out
 
