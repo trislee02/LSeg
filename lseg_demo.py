@@ -349,6 +349,15 @@ for line in lines:
 with torch.no_grad():
     outputs = evaluator.parallel_forward(image, labels) #evaluator.forward(image, labels) #parallel_forward
     #outputs = model(image,labels)
+
+    out = outputs[0]
+    fig, ax = plt.subplots(nrows=1, ncols=len(labels))
+    for r, row in enumerate(ax):
+        img = out[0][r].detach().cpu().numpy()
+        img = (img - img.min()) / (img.max() - img.min())
+        row.imshow(img, cmap='gray')
+    plt.savefig(f"{args.label_src}-received-output.png")
+    
     predicts = [
         torch.max(output, 1)[1].cpu().numpy() 
         for output in outputs
@@ -371,5 +380,5 @@ plt.figure()
 plt.legend(handles=patches, loc='upper right', bbox_to_anchor=(1.5, 1), prop={'size': 20})
 plt.axis('off')
 plt.imshow(seg)
-plt.savefig('segmented.png')
+plt.savefig(f'{args.label_src}-segmented.png')
 
