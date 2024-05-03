@@ -321,7 +321,6 @@ def get_image_feature():
     return hook
 
 model.scratch.head1.register_forward_hook(get_image_feature())
-model.
     
 model = model.eval()
 model = model.cpu()
@@ -366,8 +365,16 @@ for line in lines:
     labels.append(label)
 
 with torch.no_grad():
-    outputs = evaluator.parallel_forward(image, labels) #evaluator.forward(image, labels) #parallel_forward
+    outputs, out_logits = evaluator.parallel_forward(image, labels, True) #evaluator.forward(image, labels) #parallel_forward
     #outputs = model(image,labels)
+
+    out = out_logits[0]
+    fig, ax = plt.subplots(nrows=1, ncols=len(labels))
+    for r, row in enumerate(ax):
+        img = out[0][r].detach().cpu().numpy()
+        img = (img - img.min()) / (img.max() - img.min())
+        row.imshow(img, cmap='gray')
+    plt.savefig(f"{args.label_src}-logits.png")
 
     out = outputs[0]
     fig, ax = plt.subplots(nrows=1, ncols=len(labels))
