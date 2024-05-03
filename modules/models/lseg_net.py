@@ -161,7 +161,7 @@ class LSeg(BaseModel):
 
         self.text = clip.tokenize(self.labels)    
         
-    def forward(self, x, labelset='', debug=False):
+    def forward(self, x, labelset='', debug=False, image_features_only=False):
         if labelset == '':
             text = self.text
         else:
@@ -193,6 +193,9 @@ class LSeg(BaseModel):
 
         image_features = self.scratch.head1(path_1)
         # print(f"Image features shape: {image_features.shape}") # [1, 512, 208, 208] # 208x208 is the W/2xH/2 size of the input
+
+        if image_features_only:
+            return image_features
 
         imshape = image_features.shape
         image_features = image_features.permute(0,2,3,1).reshape(-1, self.out_c)
