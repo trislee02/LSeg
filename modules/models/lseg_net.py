@@ -207,7 +207,7 @@ class LSeg(BaseModel):
         fig, ax = plt.subplots(nrows=2, ncols=5)
         for r, row in enumerate(ax):
             for c, col in enumerate(row):
-                col.plot(image_features[0, r+c, 100, 100].detach().cpu().numpy())
+                col.imshow(image_features[0, r+c, 100, 100].detach().cpu().numpy())
 
         plt.savefig("image_features.png")
 
