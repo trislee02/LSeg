@@ -323,7 +323,7 @@ model.scratch.head1.register_forward_hook(get_image_feature())
 #     model.net.scratch.head1.register_forward_hook(get_image_feature())
     
 model = model.eval()
-model = model.cpu()
+model = model.cuda()
 scales = (
     [0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25]
     if args.dataset == "citys"
@@ -366,6 +366,7 @@ for line in lines:
 
 with torch.no_grad():
     # outputs, out_logits = evaluator.parallel_forward(image, labels, True) #evaluator.forward(image, labels) #parallel_forward
+    image = image.cuda()
     outputs, out_logits = model(image, labels, True)
 
     out = out_logits[0]
