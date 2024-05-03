@@ -209,7 +209,7 @@ class LSeg(BaseModel):
         fig, ax = plt.subplots(nrows=2, ncols=5)
         for r, row in enumerate(ax):
             for c, col in enumerate(row):
-                img = image_features[0][r+c].detach().cpu().numpy()
+                img = image_features[0][r*len(row)+c].detach().cpu().numpy()
                 # print(f"Channel #{r*len(row)+c}: max: {img.max()}, min: {img.min()}")
                 # Normalize image
                 img = (img - img.min()) / (img.max() - img.min())
@@ -232,10 +232,12 @@ class LSeg(BaseModel):
 
         out = logits_per_image.float().view(imshape[0], imshape[2], imshape[3], -1).permute(0,3,1,2) 
 
-        plt.figure()
-        img = out[0][0].detach().cpu().numpy()
-        img = (img - img.min()) / (img.max() - img.min())
-        plt.imshow(img, cmap='gray')
+        fig, ax = plt.subplots(nrows=1, ncols=4)
+        for r, row in enumerate(ax):
+            for c, col in enumerate(row):
+                img = out[0][r*len(row)+c].detach().cpu().numpy()
+                img = (img - img.min()) / (img.max() - img.min())
+                plt.imshow(img, cmap='gray')
         plt.savefig("logits_per_image.png")
 
         # print(f"Out (before headblock) shape: {out.shape}") # [1, 4, 208, 208]
