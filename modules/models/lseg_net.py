@@ -234,10 +234,9 @@ class LSeg(BaseModel):
 
         fig, ax = plt.subplots(nrows=1, ncols=4)
         for r, row in enumerate(ax):
-            for c, col in enumerate(row):
-                img = out[0][r*len(row)+c].detach().cpu().numpy()
-                img = (img - img.min()) / (img.max() - img.min())
-                plt.imshow(img, cmap='gray')
+            img = out[0][r].detach().cpu().numpy()
+            img = (img - img.min()) / (img.max() - img.min())
+            plt.imshow(img, cmap='gray')
         plt.savefig("logits_per_image.png")
 
         # print(f"Out (before headblock) shape: {out.shape}") # [1, 4, 208, 208]
